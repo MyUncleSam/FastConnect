@@ -1,0 +1,12 @@
+CREATE TABLE Config (
+	Name	TEXT NOT NULL UNIQUE,
+	Value	TEXT,
+	PRIMARY KEY(Name)
+);
+
+CREATE TABLE Connections (
+	Host	TEXT NOT NULL,
+	Port	INTEGER,
+	PRIMARY KEY(Host),
+	UNIQUE(Host)
+); 
