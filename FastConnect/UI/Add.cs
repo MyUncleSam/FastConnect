@@ -13,6 +13,8 @@ namespace FastConnect.UI
         public TextField Host { get; set; }
         public TextField Port { get; set; }
 
+        public bool Save { get; set; } = false;
+
         public Add()
         {
             Title = "Add New Connection";
@@ -87,6 +89,7 @@ namespace FastConnect.UI
                     return;
                 }
 
+                Save = true;
                 Application.RequestStop();
             };
 

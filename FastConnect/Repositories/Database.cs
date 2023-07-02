@@ -80,5 +80,85 @@ namespace FastConnect.Repositories
                 }
             }
         }
+
+        /// <summary>
+        /// add a new connection to the list
+        /// </summary>
+        /// <param name="connectionEntry"></param>
+        /// <returns></returns>
+        public static bool AddConnection(Models.SQLite.ConnectionEntry connectionEntry)
+        {
+            return AddConnection(connectionEntry.Host, connectionEntry.Port);
+        }
+
+        /// <summary>
+        /// add a new connection to the list
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        public static bool AddConnection(string host, int port)
+        {
+            using (var con = new SQLiteConnection(ConnectionString))
+            {
+                con.Open();
+
+                using (var cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "INSERT INTO Connections (Host, Port) VALUES (@Host, @Port);";
+                    cmd.Parameters.Add(new SQLiteParameter("@Host", host));
+                    cmd.Parameters.Add(new SQLiteParameter("@Port", port));
+
+                    try
+                    {
+                        return cmd.ExecuteNonQuery() == 1;
+                    }
+                    catch(Exception ex)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// removes a connection
+        /// </summary>
+        /// <param name="connectionEntry"></param>
+        /// <returns></returns>
+        public static bool DeleteConnection(Models.SQLite.ConnectionEntry connectionEntry)
+        {
+            return RemoveConnection(connectionEntry.Host, connectionEntry.Port);
+        }
+
+        /// <summary>
+        /// removes a connection
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        public static bool RemoveConnection(string host, int port)
+        {
+            using (var con = new SQLiteConnection(ConnectionString))
+            {
+                con.Open();
+
+                using (var cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM Connections WHERE Host = @Host AND Port = @Port;";
+                    cmd.Parameters.Add(new SQLiteParameter("@Host", host));
+                    cmd.Parameters.Add(new SQLiteParameter("@Port", port));
+
+                    try
+                    {
+                        return cmd.ExecuteNonQuery() == 1;
+                    }
+                    catch (Exception ex)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
     }
 }

@@ -25,4 +25,8 @@
     <ProjectReference Include="..\FastConnect\FastConnect.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Files\" />
+  </ItemGroup>
+
 </Project>

@@ -14,7 +14,7 @@ namespace FastConnect.Models.SQLite
 
         public override string ToString()
         {
-            return $"{Host}";
+            return $"{Host}:{Port}";
         }
     }
 }

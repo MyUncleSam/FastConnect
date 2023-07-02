@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -18,37 +19,44 @@ namespace FastConnect.UI
         public Main() {
             Title = $"FastConnect (c) 2023-{DateTime.Now.Year} Stefan Ruepp";
 
-            // get connections from database
-            var connections = Repositories.Database.GetConnections()
-                .OrderBy(ob => ob.ToString())
-                .ToList();
-
             // draw list
             listView = new ListView()
             {
                 X = 1,
-                Y = 2,
-                Height = Dim.Fill(),
+                Y = 0,
+                Height = Dim.Fill() - 1,
                 Width = Dim.Fill(),
                 AllowsMarking = false,
                 AllowsMultipleSelection = false,
             };
             listView.RowRender += ListView_RowRender;
             listView.KeyPress += ListView_KeyPress;
-            listView.SetSource(connections);
-
+            
             var statusBar = new StatusBar
             {
-                Visible = false,
+                Visible = true,
                 Items = new StatusItem[]
                 {
                     new StatusItem(Key.Enter, "~Enter~ Connect", () => Enter()),
-                    //new StatusItem(Key.CtrlMask | Key.A, "~^A~ Add", () => Add()), // TODO: add "add" feature
+                    new StatusItem(Key.CtrlMask | Key.A, "~^A~ Add", () => Add()),
+                    new StatusItem(Key.CtrlMask | Key.D, "~^D~ Delete", () => Delete()),
                     new StatusItem(Key.Esc, "~Esc~ Quit", () => Quit()),
                 }
             };
 
             Add(listView, statusBar);
+
+            FillConnections();
+        }
+
+        private void FillConnections()
+        {
+            // get connections from database
+            var connections = Repositories.Database.GetConnections()
+                .OrderBy(ob => ob.Host)
+                .ToList();
+
+            listView.SetSource(connections);
         }
 
         private void ListView_KeyPress(KeyEventEventArgs keyEventArg)
@@ -75,7 +83,7 @@ namespace FastConnect.UI
             }
             else
             {
-                obj.RowAttribute = new Terminal.Gui.Attribute(Color.White, Color.BrightBlue);
+                obj.RowAttribute = new Terminal.Gui.Attribute(Color.White, Color.Blue);
             }
         }
 
@@ -89,7 +97,33 @@ namespace FastConnect.UI
 
         private void Add()
         {
-            Application.Run<UI.Add>();
+            var dia = new Dialog("Test");
+            var add = new UI.Add();
+            dia.Add(add);
+            Application.Run(dia);
+
+            if(add.Save)
+            {
+                if (Repositories.Database.AddConnection(add.Host.Text.ToString(), Convert.ToInt32(add.Port.Text.ToString())))
+                {
+                    FillConnections();
+                }
+                else
+                {
+                    MessageBox.ErrorQuery("Add", "Unable to add, entry already exists in database.");
+                }
+            }
+        }
+
+        private void Delete()
+        {
+            var selectedIndex = listView.SelectedItem;
+            var curSelected = listView.Source.ToList()[selectedIndex] as Models.SQLite.ConnectionEntry;
+
+            if(Repositories.Database.DeleteConnection(curSelected))
+            {
+                FillConnections();
+            }
         }
 
         private void Quit()

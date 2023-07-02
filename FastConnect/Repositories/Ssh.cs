@@ -22,5 +22,35 @@ namespace FastConnect.Repositories
             {
             }
         }
+
+        public static IEnumerable<Models.SQLite.ConnectionEntry> GetKnownHostEntries(string filePath)
+        {
+            foreach (var line in File.ReadAllLines(filePath))
+            {
+                if(string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+
+                var firstSplitWord = line.Trim().Split(' ')[0].Split(':');
+
+                // host
+                var host = firstSplitWord[0].Trim(new char[] { '[', ']' });
+
+                // port
+                var port = 22;
+
+                if(firstSplitWord.Length > 1)
+                {
+                    port = int.Parse(firstSplitWord[1]);
+                }
+
+                yield return new Models.SQLite.ConnectionEntry() 
+                { 
+                    Host = host,
+                    Port = port 
+                };
+            }
+        }
     }
 }
