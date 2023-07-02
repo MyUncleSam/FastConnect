@@ -126,7 +126,15 @@ namespace FastConnect.UI
             if(Repositories.Database.DeleteConnection(curSelected))
             {
                 FillConnections();
-                listView.SelectedItem = selectedIndex - 1;
+
+                if(selectedIndex > 1)
+                {
+                    listView.SelectedItem = selectedIndex - 1;
+                }
+                else
+                {
+                    listView.SelectedItem = selectedIndex;
+                }
             }
         }
 
