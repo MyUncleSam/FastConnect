@@ -40,10 +40,11 @@ namespace FastConnect.UI
                     new StatusItem(Key.Enter, "~Enter~ Connect", () => Enter()),
                     new StatusItem(Key.CtrlMask | Key.A, "~^A~ Add", () => Add()),
                     new StatusItem(Key.CtrlMask | Key.D, "~^D~ Delete", () => Delete()),
+                    new StatusItem(Key.CtrlMask | Key.I, "~^I~ Import", () => Import()),
                     new StatusItem(Key.Esc, "~Esc~ Quit", () => Quit()),
                 }
             };
-
+            
             Add(listView, statusBar);
 
             FillConnections();
@@ -106,7 +107,9 @@ namespace FastConnect.UI
             {
                 if (Repositories.Database.AddConnection(add.Host.Text.ToString(), Convert.ToInt32(add.Port.Text.ToString())))
                 {
+                    var selectedIndex = listView.SelectedItem;
                     FillConnections();
+                    listView.SelectedItem = selectedIndex;
                 }
                 else
                 {
@@ -123,7 +126,16 @@ namespace FastConnect.UI
             if(Repositories.Database.DeleteConnection(curSelected))
             {
                 FillConnections();
+                listView.SelectedItem = selectedIndex - 1;
             }
+        }
+
+        private void Import()
+        {
+            var selectedIndex = listView.SelectedItem;
+            Repositories.KnownHosts.AddKnownHostsToDatabase();
+            FillConnections();
+            listView.SelectedItem = selectedIndex;
         }
 
         private void Quit()

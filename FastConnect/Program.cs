@@ -1,5 +1,4 @@
-﻿using FastConnect.Repositories;
-using Terminal.Gui;
+﻿using Terminal.Gui;
 
 namespace FastConnect
 {
@@ -8,20 +7,7 @@ namespace FastConnect
         static void Main(string[] args)
         {
             // prepare database
-            if(Repositories.Database.Create())
-            {
-                // as default add known hosts
-                var knownFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh", "known_hosts");
-
-                if(File.Exists(knownFile))
-                {
-                    var knownEntries = Repositories.Ssh.GetKnownHostEntries(knownFile);
-                    foreach (var knownEntry in knownEntries)
-                    {
-                        Repositories.Database.AddConnection(knownEntry);
-                    }
-                }
-            }
+            Repositories.Database.Create(); ;
 
             // show main ui
             Application.Run<UI.Main>();
